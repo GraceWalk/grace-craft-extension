@@ -5,6 +5,7 @@ import { PROXY_URL, NOTION_KEY, NOTION_DATABASE_WEEK_TODO_ID, NOTION_DATABASE_WE
 
 export const getFetchUrl = (url) => PROXY_URL + url.substring(url.indexOf('/api.notion.com'));
 
+// 初始化 notion 实例
 export const notion = new Client({
   auth: NOTION_KEY,
   fetch: async (url, init) => {
@@ -13,12 +14,14 @@ export const notion = new Client({
   },
 });
 
+// 获取本周目标
 export function getCurWeekGoals() {
   return notion.databases.query({
     database_id: NOTION_DATABASE_WEEK_GOAL_ID,
   });
 }
 
+// 获取今日 todos
 export function getTodayTodos() {
   return notion.databases.query({
     database_id: NOTION_DATABASE_WEEK_TODO_ID,
@@ -31,6 +34,17 @@ export function getTodayTodos() {
           },
         },
       ],
+    },
+  });
+}
+
+export function switchTodoStatus(pageId: string, complete: boolean) {
+  return notion.pages.update({
+    page_id: pageId,
+    properties: {
+      完成: {
+        checkbox: complete,
+      },
     },
   });
 }

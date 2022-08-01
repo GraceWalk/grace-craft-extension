@@ -4,7 +4,13 @@ export enum STORAGE_KEY {
 }
 
 export const getCraftStorage = (key: STORAGE_KEY) => {
-  return craft.storageApi.get(key.toString()).then((res) => JSON.parse(res.data));
+  return craft.storageApi.get(key.toString()).then((res) => {
+    if (res.status === 'success') {
+      return JSON.parse(res?.data);
+    } else {
+      return null;
+    }
+  });
 };
 
 export const setCraftStorage = (key: STORAGE_KEY, value: any) => {

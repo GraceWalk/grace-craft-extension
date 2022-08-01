@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
-import { getTodayTodos } from './notion';
+import { getTodayTodos, switchTodoStatus } from './notion';
 import { STORAGE_KEY, getCraftStorage, setCraftStorage } from './craft';
 import { Checkbox, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -23,7 +23,7 @@ const TodayTodos = () => {
       (res) => {
         let today;
         const todos = res.results.map((page: any) => {
-          const { properties } = page;
+          const { id, properties } = page;
           const { Name, 优先级: priority, 周几: whichDay, 完成: complete, 类型: type } = properties;
 
           if (!today) {
@@ -34,6 +34,7 @@ const TodayTodos = () => {
           }
 
           return {
+            id,
             name: Name.title[0].plain_text,
             priority: {
               name: priority.select.name,
@@ -43,7 +44,7 @@ const TodayTodos = () => {
               name: type.select.name,
               color: type.select.color,
             },
-            complete: complete.chechbox,
+            complete: complete.checkbox,
           };
         });
 
@@ -56,9 +57,15 @@ const TodayTodos = () => {
     );
   };
 
+  const updateStatus = (id: string, checked: boolean) => {
+    switchTodoStatus(id, checked).then(() => {
+      getTodos();
+    });
+  };
+
   useLayoutEffect(() => {
     getCraftStorage(STORAGE_KEY.TODAY_TODO).then((value) => {
-      if (typeof value === 'object') {
+      if (typeof value === 'object' && value !== null) {
         const { date, today, todos } = value;
         // 如果请求过当天的 todos，直接展示
         if (date === dayjs().date()) {
@@ -81,14 +88,14 @@ const TodayTodos = () => {
         </div>
       </div>
       <Spin spinning={loading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-        {todos.map((todo, i) => {
+        {todos.map((todo) => {
           return (
-            <div className="todo" key={i}>
+            <div className="todo" key={todo.id}>
               <div className="left-bar" style={{ backgroundColor: todo.priority.color }} />
               <div className="todo-content">
                 <div className="todo-name">{todo.name}</div>
                 <div className="detail">
-                  <Checkbox defaultChecked={todo.complete} />
+                  <Checkbox defaultChecked={todo.complete} onClick={(e) => updateStatus(todo.id, (e.target as any).checked)} />
                   <div className="detail-card" style={{ borderBottomColor: todo.type.color }}>
                     <span>{todo.type.name}</span>
                   </div>
