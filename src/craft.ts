@@ -1,12 +1,18 @@
 export enum STORAGE_KEY {
   CUR_WEEK_GOALS = 10001,
   TODAY_TODO,
+  NOTION_LINK,
 }
 
 export const getCraftStorage = (key: STORAGE_KEY) => {
   return craft.storageApi.get(key.toString()).then((res) => {
     if (res.status === 'success') {
-      return JSON.parse(res?.data);
+      try {
+        const data = JSON.parse(res?.data);
+        return data;
+      } catch (_) {
+        return res?.data;
+      }
     } else {
       return null;
     }

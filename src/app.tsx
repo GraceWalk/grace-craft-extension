@@ -1,29 +1,13 @@
 import { createRoot } from 'react-dom/client';
 import TodayTodos from './TodayTodos';
+import WeekGoal from './WeekGoal';
 import 'antd/dist/antd.css';
-import './index.css';
-
-// const CurWeekGoal = () => {
-//   useLayoutEffect(() => {
-//     getCurWeekGoals();
-//   }, []);
-//   return (
-//     <div className="cur-week-goal">
-//       <div className="title">
-//         <span>本周计划</span>
-//         <Button type="primary" size="small">
-//           打开 Notion
-//         </Button>
-//         <Button size="small">编辑</Button>
-//       </div>
-//     </div>
-//   );
-// };
+import './index.less';
 
 const App = () => {
   return (
     <div>
-      {/* <CurWeekGoal /> */}
+      <WeekGoal />
       <TodayTodos />
     </div>
   );
