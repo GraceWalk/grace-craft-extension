@@ -1,7 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import 'antd/dist/antd.css';
-import './index.css';
-import { getTodayTodos, switchTodoStatus } from './notion';
+import { BG_COLOR_MAP, getTodayTodos, switchTodoStatus } from './notion';
 import { STORAGE_KEY, getCraftStorage, setCraftStorage } from './craft';
 import { Checkbox, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -28,8 +26,8 @@ const TodayTodos = () => {
 
           if (!today) {
             today = {
-              name: whichDay.select.name,
-              color: whichDay.select.color,
+              name: whichDay.select?.name,
+              color: whichDay.select?.color,
             };
           }
 
@@ -37,12 +35,12 @@ const TodayTodos = () => {
             id,
             name: Name.title[0].plain_text,
             priority: {
-              name: priority.select.name,
-              color: priority.select.color,
+              name: priority.select?.name,
+              color: priority.select?.color,
             },
             type: {
-              name: type.select.name,
-              color: type.select.color,
+              name: type.select?.name,
+              color: type.select?.color,
             },
             complete: complete.checkbox,
           };
@@ -82,8 +80,8 @@ const TodayTodos = () => {
   return (
     <div className="today-todos">
       <div className="header">
-        <div className="title">今日 Todo</div>
-        <div className="today" style={{ backgroundColor: today?.color }}>
+        <div className="title">🚀 今日 Todo</div>
+        <div className="today" style={{ backgroundColor: BG_COLOR_MAP[today?.color], color: today?.color }}>
           {today?.name}
         </div>
       </div>
@@ -96,10 +94,10 @@ const TodayTodos = () => {
                 <div className="todo-name">{todo.name}</div>
                 <div className="detail">
                   <Checkbox defaultChecked={todo.complete} onClick={(e) => updateStatus(todo.id, (e.target as any).checked)} />
-                  <div className="detail-card" style={{ borderBottomColor: todo.type.color }}>
+                  <div className="detail-card" style={{ backgroundColor: BG_COLOR_MAP[todo.type.color], color: todo.type.color }}>
                     <span>{todo.type.name}</span>
                   </div>
-                  <div className="detail-card" style={{ borderBottomColor: todo.priority.color }}>
+                  <div className="detail-card" style={{ backgroundColor: BG_COLOR_MAP[todo.priority.color], color: todo.priority.color }}>
                     <span>{todo.priority.name}</span>
                   </div>
                 </div>
