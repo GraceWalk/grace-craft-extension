@@ -33,6 +33,10 @@ module.exports = (env, argv) => {
           test: /\.css$/,
           use: ['style-loader', 'css-loader', 'postcss-loader'],
         },
+        {
+          test: /\.less$/i,
+          use: ['style-loader', 'css-loader', 'less-loader'],
+        },
         // Allows you to use import './file.png'" in your code to get a data URI
         {
           test: /\.(svg|png|bmp|jpg|jpeg|webp|gif)$/i,

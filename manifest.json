@@ -1,9 +1,9 @@
 {
-  "name": "Craft X Example",
-  "fileName": "craftx-example",
-  "author" : "Craft Docs",
-  "authorEmail" : "team@craft.do",
-  "description" : "Example showcasing the capabilities of Craft eXtensions.",
+  "name": "GraceWalk's Daily Todo",
+  "fileName": "GraceWalkDailyTodo",
+  "author": "gracewalk",
+  "authorEmail": "gracewalk1999@163.com",
+  "description": "与 Notion 联动，获取本周计划和今日目标",
   "id": "com.craft.x.example",
   "api": "0.0.4",
   "main": "index.html"
