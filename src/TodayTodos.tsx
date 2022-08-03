@@ -1,11 +1,12 @@
 import { useLayoutEffect, useState } from 'react';
-import { BG_COLOR_MAP, getTodayTodos, switchTodoStatus } from './notion';
-import { STORAGE_KEY, getCraftStorage, setCraftStorage } from './craft';
 import { Checkbox, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as dayjs from 'dayjs';
+import { BG_COLOR_MAP, getTodayTodos, switchTodoStatus } from './notion';
+import { STORAGE_KEY, getCraftStorage, setCraftStorage } from './craft';
 
-const TodayTodos = () => {
+const TodayTodos = (props: { todoCheck: () => void }) => {
+  const { todoCheck } = props;
   const [loading, setLoading] = useState<boolean>(true);
   const [today, setToday] = useState<{
     name: string;
@@ -57,6 +58,7 @@ const TodayTodos = () => {
 
   const updateStatus = (id: string, checked: boolean) => {
     switchTodoStatus(id, checked).then(() => {
+      todoCheck();
       getTodos();
     });
   };

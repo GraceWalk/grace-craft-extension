@@ -1,10 +1,11 @@
 import { Button, Input, message, Progress, Tooltip } from 'antd';
-import { useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import * as dayjs from 'dayjs';
 import { BG_COLOR_MAP, getCurWeekGoals } from './notion';
 import notionPng from '../notion.png';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { getCraftStorage, setCraftStorage, STORAGE_KEY } from './craft';
+import { StateContext } from './app';
 
 const TurnToNotion = () => {
   const [link, setLink] = useState<string>('');
@@ -47,6 +48,7 @@ const TurnToNotion = () => {
 };
 
 const WeekGoal = () => {
+  const count = useContext(StateContext);
   const [loading, setLoading] = useState<boolean>(true);
   const [goals, setGoals] = useState<any>([]);
 
@@ -91,7 +93,8 @@ const WeekGoal = () => {
       // 后台更新本周目标
       getWeekGoals();
     });
-  }, []);
+  }, [count]);
+
   return (
     <div className="week-goal">
       <div className="header">
@@ -107,7 +110,8 @@ const WeekGoal = () => {
                 strokeLinecap="round"
                 trailColor="#828389"
                 strokeWidth={10}
-                percent={(goal?.checkedSubTaskNum / goal?.subTaskNum) * 100}
+                percent={((goal?.checkedSubTaskNum / goal?.subTaskNum) * 100) ^ 0}
+                format={(p) => p}
                 status="active"
                 width={40}
               />
