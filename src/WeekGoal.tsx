@@ -1,4 +1,4 @@
-import { Button, Input, message, Progress, Tooltip } from 'antd';
+import { Button, Collapse, Input, message, Progress, Tooltip } from 'antd';
 import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import * as dayjs from 'dayjs';
 import { BG_COLOR_MAP, getCurWeekGoals } from './notion';
@@ -11,7 +11,7 @@ const TurnToNotion = () => {
   const [link, setLink] = useState<string>('');
 
   const updateLink = (newLink: string) => {
-    setCraftStorage(STORAGE_KEY.NOTION_LINK, newLink).then(() => message.success('保存成功'));
+    setCraftStorage(STORAGE_KEY.NOTION_LINK, newLink);
   };
 
   useLayoutEffect(() => {
@@ -22,8 +22,15 @@ const TurnToNotion = () => {
     <Tooltip
       placement="bottom"
       title={
-        <div style={{ display: 'flex' }}>
+        <div
+          style={{ display: 'flex' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+        >
           <Input
+            id="link-input"
             style={{ marginRight: 4, backgroundColor: 'transparent', color: '#fff' }}
             size="small"
             value={link}
@@ -40,7 +47,22 @@ const TurnToNotion = () => {
       }
       mouseEnterDelay={1}
     >
-      <div className="open-notion" onClick={() => window.open(link)}>
+      <div
+        className="open-notion"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+
+          const input = document.createElement('input');
+          document.body.appendChild(input);
+          input.setAttribute('value', link);
+          input.select();
+          if (document.execCommand('copy')) {
+            document.execCommand('copy');
+          }
+          document.body.removeChild(input);
+        }}
+      >
         <img src={notionPng} />
       </div>
     </Tooltip>
@@ -50,9 +72,11 @@ const TurnToNotion = () => {
 const WeekGoal = () => {
   const count = useContext(StateContext);
   const [loading, setLoading] = useState<boolean>(true);
+  const [backendLoading, setBackendLoading] = useState<boolean>(false);
   const [goals, setGoals] = useState<any>([]);
 
   const getWeekGoals = () => {
+    setBackendLoading(true);
     getCurWeekGoals().then(
       (res) => {
         const goals = res.results.map((page: any) => {
@@ -75,8 +99,13 @@ const WeekGoal = () => {
           goals,
         });
         setLoading(false);
+        setBackendLoading(false);
       },
-      () => setLoading(false)
+      () => {
+        setLoading(false);
+        setBackendLoading(false);
+        message.error('周计划更新失败');
+      }
     );
   };
 
@@ -96,43 +125,53 @@ const WeekGoal = () => {
   }, [count]);
 
   return (
-    <div className="week-goal">
-      <div className="header">
-        <span className="title">👾 本周计划</span>
-        <TurnToNotion />
-      </div>
-      <div className="goal-container">
-        {goals.map((goal) => {
-          return (
-            <div className="goal">
-              <Progress
-                type="circle"
-                strokeLinecap="round"
-                trailColor="#828389"
-                strokeWidth={10}
-                percent={((goal?.checkedSubTaskNum / goal?.subTaskNum) * 100) ^ 0}
-                format={(p) => p}
-                status="active"
-                width={40}
-              />
-              <div className="right">
-                <div className="title">{goal?.name}</div>
-                <div className="detail">
-                  {goal?.tag?.name && (
-                    <div className="type" style={{ backgroundColor: BG_COLOR_MAP[goal?.tag?.color], color: goal?.tag?.color }}>
-                      {goal?.tag?.name}
+    <>
+      <Collapse ghost={true} className="week-goal" defaultActiveKey={['1']} expandIcon={() => <></>} expandIconPosition="end">
+        <Collapse.Panel
+          key="1"
+          header={
+            <div className="header">
+              <span className="title">
+                <span className={`icon ${backendLoading ? 'loading' : ''}`}>👾</span> 本周计划
+              </span>
+              <TurnToNotion />
+            </div>
+          }
+        >
+          <div className="goal-container">
+            {goals.map((goal) => {
+              return (
+                <div className="goal">
+                  <Progress
+                    type="circle"
+                    strokeLinecap="round"
+                    trailColor="#828389"
+                    strokeWidth={10}
+                    percent={((goal?.checkedSubTaskNum / goal?.subTaskNum) * 100) ^ 0}
+                    format={(p) => p}
+                    status="active"
+                    width={40}
+                  />
+                  <div className="right">
+                    <div className="title">{goal?.name}</div>
+                    <div className="detail">
+                      {goal?.tag?.name && (
+                        <div className="type" style={{ backgroundColor: BG_COLOR_MAP[goal?.tag?.color], color: goal?.tag?.color }}>
+                          {goal?.tag?.name}
+                        </div>
+                      )}
+                      <div className="task-num">
+                        完成: {goal?.checkedSubTaskNum} / {goal?.subTaskNum}
+                      </div>
                     </div>
-                  )}
-                  <div className="task-num">
-                    完成: {goal?.checkedSubTaskNum} / {goal?.subTaskNum}
                   </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+              );
+            })}
+          </div>
+        </Collapse.Panel>
+      </Collapse>
+    </>
   );
 };
 
