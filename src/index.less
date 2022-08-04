@@ -2,14 +2,27 @@
   max-width: 280px;
   width: 100%;
   height: 100%;
+  overflow: hidden auto;
   padding: 10px;
   margin: 0 auto;
-  background-color: #2e2e35;
+  background-color: #353541;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Goals */
 .week-goal {
-  margin-bottom: 28px;
+  .ant-collapse-header,
+  .ant-collapse-content-box {
+    padding: 0 !important;
+  }
   .header {
     display: flex;
     align-items: center;
@@ -19,6 +32,12 @@
       font-size: 18px;
       color: #fff;
       font-weight: bold;
+      .icon {
+        display: inline-block;
+        &.loading {
+          animation: loading 2s ease infinite;
+        }
+      }
     }
     .open-notion {
       margin-top: -2px;
@@ -37,6 +56,10 @@
       margin-bottom: 10px;
       border-radius: 12px;
       box-shadow: 0 0 4px 2px rgba(33, 34, 42, 0.422);
+      transition: box-shadow 0.5s ease;
+      &:hover {
+        box-shadow: 0 0 6px 2px rgba(14, 14, 33, 0.542);
+      }
       background-color: #232228;
       .ant-progress {
         margin-top: 5px;
@@ -69,6 +92,7 @@
 }
 /* Todos */
 .today-todos {
+  padding-top: 28px;
   .ant-spin-nested-loading {
     height: 60px;
   }
@@ -81,6 +105,12 @@
       font-size: 18px;
       color: #fff;
       font-weight: bold;
+      .icon {
+        display: inline-block;
+        &.loading {
+          animation: loading 2s ease infinite;
+        }
+      }
     }
     .today {
       padding: 0 4px;

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { Checkbox, Spin } from 'antd';
+import { Checkbox, message, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as dayjs from 'dayjs';
 import { BG_COLOR_MAP, getTodayTodos, switchTodoStatus } from './notion';
@@ -8,6 +8,7 @@ import { STORAGE_KEY, getCraftStorage, setCraftStorage } from './craft';
 const TodayTodos = (props: { todoCheck: () => void }) => {
   const { todoCheck } = props;
   const [loading, setLoading] = useState<boolean>(true);
+  const [backendLoading, setBackendLoading] = useState<boolean>(false);
   const [today, setToday] = useState<{
     name: string;
     color: string;
@@ -18,6 +19,7 @@ const TodayTodos = (props: { todoCheck: () => void }) => {
   const [todos, setTodos] = useState<any>([]);
 
   const getTodos = () => {
+    setBackendLoading(true);
     getTodayTodos().then(
       (res) => {
         let today;
@@ -51,12 +53,18 @@ const TodayTodos = (props: { todoCheck: () => void }) => {
         setToday(today);
         setTodos(todos);
         setLoading(false);
+        setBackendLoading(false);
       },
-      () => setLoading(false)
+      () => {
+        setLoading(false);
+        setBackendLoading(false);
+        message.error('todo 更新失败');
+      }
     );
   };
 
   const updateStatus = (id: string, checked: boolean) => {
+    setBackendLoading(true);
     switchTodoStatus(id, checked).then(() => {
       todoCheck();
       getTodos();
@@ -82,7 +90,9 @@ const TodayTodos = (props: { todoCheck: () => void }) => {
   return (
     <div className="today-todos">
       <div className="header">
-        <div className="title">🚀 今日 Todo</div>
+        <div className="title">
+          <span className={`icon ${backendLoading ? 'loading' : ''}`}>🚀</span> 今日 Todo
+        </div>
         <div className="today" style={{ backgroundColor: BG_COLOR_MAP[today?.color], color: today?.color }}>
           {today?.name}
         </div>
